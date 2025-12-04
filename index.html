@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Wadzik Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root{
+  --bg: #1a0b2e;
+  --grad: linear-gradient(135deg, #11051b, #2b1055, #180829);
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --accent: #00d2ff;
+  --accent-glow: rgba(0, 210, 255, 0.4);
+  --text: #fff;
+}
+
+/* 1. ВИДАЛЕННЯ СКРОЛБАРІВ (ГЛОБАЛЬНО) */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; -ms-overflow-style: none; user-select: none; }
+*::-webkit-scrollbar { display: none; }
+
+body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Roboto', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+.app { width: 100%; max-width: 420px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; padding: 20px; position: relative; }
+
+/* HEADER */
+.header { display: flex; justify-content: center; align-items: center; padding: 15px 0; margin-bottom: 10px; }
+.title { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.8); }
+
+/* VIEWS */
+.view { display: none; flex: 1; flex-direction: column; align-items: center; width: 100%; overflow-y: auto; padding-bottom: 100px; animation: fadeIn 0.3s ease; }
+.view.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- CARD STYLE --- */
+.card {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 25px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  display: flex; flex-direction: column; align-items: center;
+}
+
+/* --- CLOCK --- */
+.clock-face {
+    width: 240px; height: 240px; border-radius: 50%;
+    background: radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.4));
+    border: 4px solid rgba(255,255,255,0.05);
+    position: relative; margin-bottom: 20px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+.hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; border-radius: 4px; transform: translateX(-50%) rotate(0deg); transition: transform 0.1s cubic-bezier(0.4, 2.3, 0.3, 1); }
+.hour { width: 6px; height: 60px; background: #fff; z-index: 2; }
+.minute { width: 4px; height: 90px; background: var(--accent); z-index: 3; box-shadow: 0 0 10px var(--accent); }
+.second { width: 2px; height: 100px; background: #ff4444; z-index: 4; }
+.center-dot { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); z-index: 5; }
+.tick { position: absolute; width: 2px; height: 10px; background: rgba(255,255,255,0.3); left: 50%; transform-origin: center 120px; top: 0; }
+.tick.major { width: 4px; height: 15px; background: #fff; }
+
+.sync-btn {
+    margin-top: 20px; padding: 12px 25px;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    border-radius: 12px; color: var(--accent); font-family: 'Orbitron'; font-size: 0.9rem;
+    cursor: pointer; display: flex; align-items: center; gap: 10px;
+    transition: 0.2s;
+}
+.sync-btn:active { background: var(--accent); color: #000; transform: scale(0.95); }
+
+/* --- TIMER (WHEELS FIXED) --- */
+.timer-ui { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.wheels-wrap {
+    display: flex; gap: 15px; justify-content: center; align-items: center;
+    height: 200px; width: 100%; position: relative;
+    /* Градієнтна маска, щоб краї зникали */
+    mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+}
+/* Рамка вибору по центру */
+.wheels-wrap::after {
+    content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 50px;
+    background: rgba(255,255,255,0.05); border-radius: 10px; transform: translateY(-50%); pointer-events: none;
+    border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.wheel {
+    width: 60px; height: 100%;
+    overflow-y: scroll; 
+    scroll-snap-type: y mandatory;
+    padding-top: 75px; /* (200px / 2) - (50px / 2) = Центрування першого елемента */
+    padding-bottom: 75px;
+}
+.wheel-item {
+    height: 50px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron'; font-size: 1.8rem; color: rgba(255,255,255,0.3);
+    scroll-snap-align: center;
+    transition: 0.2s;
+}
+.wheel-item.active { color: #fff; transform: scale(1.2); text-shadow: 0 0 15px var(--accent); }
+
+.play-btn {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #8b6bff);
+    border: none; color: #fff; font-size: 1.5rem; margin-top: 30px;
+    box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
+}
+.play-btn:active { transform: scale(0.9); }
+
+/* --- LIGHT CONTROL --- */
+.switch-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.9rem; color: #aaa; }
+.ios-switch { position: relative; width: 44px; height: 24px; background: #333; border-radius: 20px; transition: 0.3s; cursor: pointer; }
+.ios-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+input:checked + .ios-switch { background: var(--accent); }
+input:checked + .ios-switch::after { transform: translateX(20px); }
+
+.color-ring {
+    width: 200px; height: 200px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 40px var(--glow, #00d2ff);
+    margin: 10px 0; position: relative;
+    transition: box-shadow 0.3s;
+}
+input[type="color"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.hex-text { font-family: 'Orbitron'; font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 20px; }
+
+/* Sliders */
+.slider-box { width: 100%; margin-top: 15px; }
+.slider-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; margin-bottom: 8px; }
+input[type=range] { width: 100%; height: 6px; background: #333; border-radius: 10px; -webkit-appearance: none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
+
+/* Modes */
+.modes-box { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-top: 20px; }
+.mode-tag { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 12px; text-align: center; border-radius: 12px; font-size: 0.8rem; font-weight: bold; color: #aaa; cursor: pointer; transition: 0.2s; }
+.mode-tag.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow); border: none; }
+
+/* 2. НОВА НАВІГАЦІЯ (FLOATING CAPSULE) */
+.nav {
+    position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+    background: rgba(20, 10, 35, 0.9); backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px; padding: 5px 10px;
+    display: flex; gap: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100;
+}
+.nav-btn {
+    padding: 12px 20px; border-radius: 20px; color: rgba(255,255,255,0.4);
+    font-size: 1.2rem; cursor: pointer; transition: 0.3s;
+    display: flex; align-items: center; justify-content: center;
+}
+.nav-btn.active { background: var(--surface); color: #fff; text-shadow: 0 0 15px var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="app">
+    <div class="header">
+        <div class="title" id="pageTitle">CONTROL CENTER</div>
+    </div>
+
+    <div id="v-clock" class="view active">
+        <div class="card">
+            <div class="clock-face" id="clockFace">
+                <div class="center-dot"></div>
+                <div class="hand hour" id="hh"></div>
+                <div class="hand minute" id="mh"></div>
+                <div class="hand second" id="sh"></div>
+            </div>
+            <div style="font-family:'Orbitron'; font-size:2.5rem;" id="digTime">00:00</div>
+            <div style="color:#888; font-size:0.9rem" id="dateStr">--</div>
+            
+            <button class="sync-btn" onclick="syncTime()">
+                <i class="fa-solid fa-rotate"></i> Синхронізувати час
+            </button>
+        </div>
+    </div>
+
+    <div id="v-led" class="view">
+        <div class="card">
+            <div class="switch-row">
+                <span><i class="fa-solid fa-robot"></i> AUTO Mode (Lux)</span>
+                <label><input type="checkbox" id="autoCheck" onclick="togAuto()"><div class="ios-switch"></div></label>
+            </div>
+            <div style="font-size:0.8rem; color:#666; margin-top:-15px; margin-bottom:15px; width:100%; text-align:right" id="luxVal">Lux: --</div>
+
+            <div class="color-ring" id="ring">
+                <i class="fa-solid fa-lightbulb" style="font-size: 3rem; opacity: 0.5;"></i>
+                <input type="color" id="cp" value="#00d2ff">
+            </div>
+            <div class="hex-text" id="hexText">#00D2FF</div>
+
+            <div class="slider-box">
+                <div class="slider-label"><span>Яскравість</span><span id="brV">100%</span></div>
+                <input type="range" id="br" min="0" max="100" value="100">
+            </div>
+            <div class="slider-box">
+                <div class="slider-label"><span>Білий Канал</span><span id="wV">0%</span></div>
+                <input type="range" id="w" min="0" max="100" value="0">
+            </div>
+            <div class="slider-box">
+                <div class="slider-label"><span>Швидкість</span><span id="spV">50%</span></div>
+                <input type="range" id="sp" min="1" max="100" value="50">
+            </div>
+
+            <div class="modes-box">
+                <div class="mode-tag active" onclick="sMode(0, this)">STATIC</div>
+                <div class="mode-tag" onclick="sMode(1, this)">RAINBOW</div>
+                <div class="mode-tag" onclick="sMode(2, this)">STROBE</div>
+                <div class="mode-tag" onclick="sMode(3, this)">BREATH</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="v-timer" class="view">
+        <div class="card">
+            <div id="t-select" class="timer-ui">
+                <div class="wheels-wrap">
+                    <div class="wheel" id="wh"></div>
+                    <div style="font-family:'Orbitron'; font-size:2rem; padding-bottom:10px">:</div>
+                    <div class="wheel" id="wm"></div>
+                    <div style="font-family:'Orbitron'; font-size:2rem; padding-bottom:10px">:</div>
+                    <div class="wheel" id="ws"></div>
+                </div>
+                <button class="play-btn" onclick="startT()"><i class="fa-solid fa-play"></i></button>
+            </div>
+
+            <div id="t-run" class="timer-ui" style="display:none">
+                <div style="font-family:'Orbitron'; font-size:3.5rem; margin: 40px 0" id="t-disp">00:00:00</div>
+                <button class="play-btn" style="background: #ff4444; box-shadow: 0 10px 30px rgba(255, 68, 68, 0.3);" onclick="stopT()">
+                    <i class="fa-solid fa-stop"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="nav">
+    <div class="nav-btn active" onclick="nav('v-clock', this)"><i class="fa-solid fa-clock"></i></div>
+    <div class="nav-btn" onclick="nav('v-led', this)"><i class="fa-solid fa-lightbulb"></i></div>
+    <div class="nav-btn" onclick="nav('v-timer', this)"><i class="fa-solid fa-hourglass-half"></i></div>
+</div>
+
+<script>
+// --- CLOCK ---
+const face = document.getElementById('clockFace');
+for(let i=0;i<12;i++){
+    let tk = document.createElement('div');
+    tk.className = 'tick ' + (i%3==0?'major':'');
+    tk.style.transform = `translateX(-50%) rotate(${i*30}deg)`;
+    face.appendChild(tk);
+}
+
+function updateClock(){
+    const d = new Date();
+    const h=d.getHours(), m=d.getMinutes(), s=d.getSeconds();
+    document.getElementById('sh').style.transform = `translateX(-50%) rotate(${s*6}deg)`;
+    document.getElementById('mh').style.transform = `translateX(-50%) rotate(${m*6 + s*0.1}deg)`;
+    document.getElementById('hh').style.transform = `translateX(-50%) rotate(${h%12*30 + m*0.5}deg)`;
+    document.getElementById('digTime').innerText = d.toLocaleTimeString('uk-UA');
+    document.getElementById('dateStr').innerText = d.toLocaleDateString('uk-UA', {weekday:'long', day:'numeric', month:'long'});
+}
+setInterval(updateClock, 1000); updateClock();
+
+function syncTime() {
+    const d = new Date();
+    // Відправляємо час на ESP (хендлер /time треба буде додати в С-код, якщо хочеш реальну синхронізацію)
+    fetch(`/time?h=${d.getHours()}&m=${d.getMinutes()}&s=${d.getSeconds()}`).catch(()=>{});
+    alert('Час відправлено на пристрій!');
+}
+
+// --- TIMER WHEELS ---
+function mkWheel(id, max) {
+    const el = document.getElementById(id);
+    for(let i=0; i<max; i++) {
+        let d = document.createElement('div'); d.className='wheel-item';
+        d.innerText = i.toString().padStart(2,'0');
+        el.appendChild(d);
+    }
+    el.addEventListener('scroll', () => {
+        let idx = Math.round(el.scrollTop / 50);
+        el.querySelectorAll('.wheel-item').forEach((it, i) => it.classList.toggle('active', i===idx));
+    });
+    // Init highlight
+    setTimeout(()=>el.dispatchEvent(new Event('scroll')), 100);
+}
+mkWheel('wh', 24); mkWheel('wm', 60); mkWheel('ws', 60);
+
+let tInt;
+function startT() {
+    let h = Math.round(document.getElementById('wh').scrollTop/50);
+    let m = Math.round(document.getElementById('wm').scrollTop/50);
+    let s = Math.round(document.getElementById('ws').scrollTop/50);
+    let tot = h*3600 + m*60 + s;
+    if(tot <= 0) return;
+
+    document.getElementById('t-select').style.display='none';
+    document.getElementById('t-run').style.display='flex';
+
+    tInt = setInterval(() => {
+        tot--;
+        if(tot < 0) { stopT(); alert('Таймер!'); return; }
+        let hh = Math.floor(tot/3600), mm = Math.floor((tot%3600)/60), ss = tot%60;
+        document.getElementById('t-disp').innerText = 
+            `${hh.toString().padStart(2,'0')}:${mm.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}`;
+    }, 1000);
+}
+function stopT() {
+    clearInterval(tInt);
+    document.getElementById('t-run').style.display='none';
+    document.getElementById('t-select').style.display='flex';
+}
+
+// --- LED & NAV ---
+const root = document.documentElement;
+let ls=0;
+function send(u){let n=Date.now();if(n-ls<50)return;ls=n;fetch(u).catch(()=>{})}
+
+function upd() {
+    let h = document.getElementById('cp').value;
+    let br = document.getElementById('br').value;
+    let w = document.getElementById('w').value;
+    let r=parseInt(h.slice(1,3),16), g=parseInt(h.slice(3,5),16), b=parseInt(h.slice(5,7),16);
+    
+    document.getElementById('brV').innerText = br+'%';
+    document.getElementById('wV').innerText = w+'%';
+    document.getElementById('hexText').innerText = h.toUpperCase();
+    
+    root.style.setProperty('--glow', h);
+    document.getElementById('ring').style.boxShadow = `0 0 40px ${h}, inset 0 0 10px ${h}`;
+    
+    send(`/set?r=${r}&g=${g}&b=${b}&br=${br}&w=${w}`);
+}
+
+document.getElementById('cp').addEventListener('input', upd);
+document.getElementById('br').addEventListener('input', upd);
+document.getElementById('w').addEventListener('input', upd);
+document.getElementById('sp').addEventListener('input', (e)=>{
+    document.getElementById('spV').innerText=e.target.value+'%';
+    send(`/speed?val=${e.target.value}`);
+});
+
+function nav(id, el) {
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+}
+
+function sMode(m, el) {
+    document.querySelectorAll('.mode-tag').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+    send(`/mode?val=${m}`);
+}
+function togAuto() {
+    send('/auto?val='+(document.getElementById('autoCheck').checked?1:0));
+}
+
+// Lux Update
+setInterval(()=>{
+    if(document.getElementById('v-led').classList.contains('active')) {
+        fetch('/status').then(r=>r.json()).then(d=>{
+            document.getElementById('luxVal').innerText = 'Lux: '+d.lux.toFixed(1);
+            if(d.auto && !document.getElementById('autoCheck').checked) document.getElementById('autoCheck').checked=true;
+        }).catch(()=>{});
+    }
+}, 2000);
+
+</script>
+</body>
+</html>
