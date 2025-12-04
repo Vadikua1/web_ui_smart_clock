@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Control System V2</title>
+<title>Control System Hybrid</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
 :root{
   --bg: #1a0b2e;
-  --grad: linear-gradient(135deg, #11051b, #2b1055, #180829);
+  --grad: linear-gradient(135deg, #0f0518, #1f0b3d, #12061f);
   --glass: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
   --accent: #00d2ff;
   --text: #fff;
   --danger: #ff4444;
+  --slot-height: 40px; /* Висота одного рядка барабана */
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; user-select: none; }
@@ -59,71 +60,78 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
 .tick { position: absolute; width: 2px; height: 10px; background: rgba(255,255,255,0.3); left: 50%; transform-origin: center 100px; top: 0; }
 .tick.major { width: 4px; height: 15px; background: #fff; }
 
-/* --- NEW DIGITAL PICKER STYLES --- */
-.digital-picker {
+/* --- STRICT DRUM PICKER STYLES --- */
+.picker-container {
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin: 20px 0;
+    align-items: center;
     gap: 10px;
+    margin: 15px 0;
+    padding: 10px;
     background: rgba(0,0,0,0.2);
-    padding: 15px;
     border-radius: 16px;
     border: 1px solid var(--glass-border);
 }
 
-.picker-unit {
+.picker-col {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 60px; /* Fixed width prevents wobble */
 }
 
-.picker-btn {
-    background: transparent;
-    border: none;
-    color: var(--accent);
-    font-size: 1.5rem;
-    padding: 5px 15px;
-    cursor: pointer;
-    transition: 0.2s;
-    opacity: 0.7;
-}
-.picker-btn:active { transform: scale(0.8); opacity: 1; color: #fff; }
-
-.picker-val {
-    font-family: 'Orbitron';
-    font-size: 2rem;
-    color: #fff;
-    min-width: 50px;
-    text-align: center;
-    text-shadow: 0 0 10px var(--accent);
-    margin: 5px 0;
+/* The Wheel Window */
+.wheel-window {
+    height: 120px; /* Shows exactly 3 items (40px * 3) */
+    width: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden; /* Strict no horizontal */
+    scroll-snap-type: y mandatory;
+    position: relative;
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+    
+    /* Fade Effect */
+    mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
 }
 
-.picker-sep {
-    font-family: 'Orbitron';
-    font-size: 2rem;
-    color: #888;
-    margin-top: -5px;
-    animation: blink 2s infinite;
+/* The items inside */
+.wheel-item {
+    height: var(--slot-height);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron'; font-size: 1.4rem; color: rgba(255,255,255,0.3);
+    scroll-snap-align: center;
+}
+.wheel-item.active { color: #fff; text-shadow: 0 0 10px var(--accent); transform: scale(1.1); }
+
+/* Center Highlight Bar (Overlay) */
+.highlight-bar {
+    position: absolute; top: 50%; left: 0; width: 100%; height: var(--slot-height);
+    transform: translateY(-50%);
+    border-top: 1px solid var(--accent);
+    border-bottom: 1px solid var(--accent);
+    background: rgba(0, 210, 255, 0.05);
+    pointer-events: none; /* Let clicks pass through */
+    z-index: 10;
 }
 
-@keyframes blink { 50% { opacity: 0.3; } }
+.picker-arrow {
+    background: transparent; border: none; color: var(--accent);
+    font-size: 1.2rem; cursor: pointer; padding: 5px; opacity: 0.7;
+    transition: 0.1s;
+}
+.picker-arrow:active { transform: scale(1.2); color: #fff; opacity: 1; }
+
+.picker-sep { font-family: 'Orbitron'; font-size: 1.5rem; color: #666; padding-top: 0px; }
+
 
 .set-btn {
-    width: 100%;
-    margin-top: 10px;
-    padding: 12px;
-    background: var(--accent);
-    border-radius: 12px;
-    border: none;
-    color: #000;
-    font-family: 'Orbitron';
-    font-weight: bold;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
-    transition: 0.2s;
+    width: 100%; margin-top: 10px; padding: 12px;
+    background: var(--accent); border-radius: 12px; border: none;
+    color: #000; font-family: 'Orbitron'; font-weight: bold; font-size: 1rem;
+    cursor: pointer; box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); transition: 0.2s;
 }
 .set-btn:active { transform: scale(0.98); opacity: 0.8; }
 
@@ -170,7 +178,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 
 <div class="app">
     <div class="header">
-        <div class="title">MEGAKNIGHT TOP CONTROL</div>
+        <div class="title">CONTROL SYSTEM V3</div>
     </div>
 
     <div id="v-clock" class="view active">
@@ -185,19 +193,28 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
             <div style="font-family:'Orbitron'; font-size:2.5rem;" id="digTime">00:00</div>
             <div style="color:#888; font-size:0.9rem; margin-bottom: 5px" id="dateStr">--</div>
 
-            <div class="digital-picker">
-                <div class="picker-unit">
-                    <button class="picker-btn" onclick="adjTime('ch', 1)"><i class="fa-solid fa-chevron-up"></i></button>
-                    <div class="picker-val" id="ch-val">12</div>
-                    <button class="picker-btn" onclick="adjTime('ch', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+            <div class="picker-container">
+                <div class="picker-col">
+                    <button class="picker-arrow" onclick="moveWheel('wh-h', -1)"><i class="fa-solid fa-chevron-up"></i></button>
+                    <div style="position:relative; width:100%">
+                        <div class="highlight-bar"></div>
+                        <div class="wheel-window" id="wh-h"></div>
+                    </div>
+                    <button class="picker-arrow" onclick="moveWheel('wh-h', 1)"><i class="fa-solid fa-chevron-down"></i></button>
                 </div>
+                
                 <div class="picker-sep">:</div>
-                <div class="picker-unit">
-                    <button class="picker-btn" onclick="adjTime('cm', 1)"><i class="fa-solid fa-chevron-up"></i></button>
-                    <div class="picker-val" id="cm-val">00</div>
-                    <button class="picker-btn" onclick="adjTime('cm', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+
+                <div class="picker-col">
+                    <button class="picker-arrow" onclick="moveWheel('wh-m', -1)"><i class="fa-solid fa-chevron-up"></i></button>
+                    <div style="position:relative; width:100%">
+                        <div class="highlight-bar"></div>
+                        <div class="wheel-window" id="wh-m"></div>
+                    </div>
+                    <button class="picker-arrow" onclick="moveWheel('wh-m', 1)"><i class="fa-solid fa-chevron-down"></i></button>
                 </div>
             </div>
+
             <button class="set-btn" onclick="setManTime()">ВСТАНОВИТИ ЧАС</button>
 
             <button class="sync-btn" onclick="syncBrowser()">
@@ -248,25 +265,34 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
     <div id="v-timer" class="view">
         <div class="card">
             <div id="t-select" class="timer-ui">
-                <div style="font-family:'Orbitron'; font-size:1rem; color:#aaa; margin-bottom:10px">НАЛАШТУВАННЯ ТАЙМЕРА</div>
+                <div style="font-family:'Orbitron'; font-size:1rem; color:#aaa; margin-bottom:10px">ТАЙМЕР</div>
                 
-                <div class="digital-picker">
-                    <div class="picker-unit">
-                        <button class="picker-btn" onclick="adjTimer('th', 1)"><i class="fa-solid fa-chevron-up"></i></button>
-                        <div class="picker-val" id="th-val">00</div>
-                        <button class="picker-btn" onclick="adjTimer('th', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                <div class="picker-container">
+                    <div class="picker-col">
+                        <button class="picker-arrow" onclick="moveWheel('wt-h', -1)"><i class="fa-solid fa-chevron-up"></i></button>
+                        <div style="position:relative; width:100%">
+                            <div class="highlight-bar"></div>
+                            <div class="wheel-window" id="wt-h"></div>
+                        </div>
+                        <button class="picker-arrow" onclick="moveWheel('wt-h', 1)"><i class="fa-solid fa-chevron-down"></i></button>
                     </div>
                     <div class="picker-sep">:</div>
-                    <div class="picker-unit">
-                        <button class="picker-btn" onclick="adjTimer('tm', 1)"><i class="fa-solid fa-chevron-up"></i></button>
-                        <div class="picker-val" id="tm-val">05</div>
-                        <button class="picker-btn" onclick="adjTimer('tm', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="picker-col">
+                        <button class="picker-arrow" onclick="moveWheel('wt-m', -1)"><i class="fa-solid fa-chevron-up"></i></button>
+                        <div style="position:relative; width:100%">
+                            <div class="highlight-bar"></div>
+                            <div class="wheel-window" id="wt-m"></div>
+                        </div>
+                        <button class="picker-arrow" onclick="moveWheel('wt-m', 1)"><i class="fa-solid fa-chevron-down"></i></button>
                     </div>
                     <div class="picker-sep">:</div>
-                    <div class="picker-unit">
-                        <button class="picker-btn" onclick="adjTimer('ts', 1)"><i class="fa-solid fa-chevron-up"></i></button>
-                        <div class="picker-val" id="ts-val">00</div>
-                        <button class="picker-btn" onclick="adjTimer('ts', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                    <div class="picker-col">
+                        <button class="picker-arrow" onclick="moveWheel('wt-s', -1)"><i class="fa-solid fa-chevron-up"></i></button>
+                        <div style="position:relative; width:100%">
+                            <div class="highlight-bar"></div>
+                            <div class="wheel-window" id="wt-s"></div>
+                        </div>
+                        <button class="picker-arrow" onclick="moveWheel('wt-s', 1)"><i class="fa-solid fa-chevron-down"></i></button>
                     </div>
                 </div>
 
@@ -319,78 +345,88 @@ setInterval(updateClock, 1000); updateClock();
 let ls=0;
 function send(u){let n=Date.now();if(n-ls<50)return;ls=n;fetch(u).catch(()=>{})}
 
-// --- DIGITAL PICKER LOGIC ---
-let clockVals = { h: 12, m: 0 };
-let timerVals = { h: 0, m: 5, s: 0 };
-
-function pad(n) { return n.toString().padStart(2,'0'); }
-
-function adjTime(type, dir) {
-    if(type === 'ch') {
-        clockVals.h += dir;
-        if(clockVals.h > 23) clockVals.h = 0;
-        if(clockVals.h < 0) clockVals.h = 23;
-        document.getElementById('ch-val').innerText = pad(clockVals.h);
-    } else {
-        clockVals.m += dir;
-        if(clockVals.m > 59) clockVals.m = 0;
-        if(clockVals.m < 0) clockVals.m = 59;
-        document.getElementById('cm-val').innerText = pad(clockVals.m);
+// --- WHEEL BUILDER (Improved) ---
+function mkWheel(id, max) {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    // Padding Top/Bottom to center the first/last items
+    // Since view height is 120px and item is 40px, we need 40px padding top/bottom
+    let pt = document.createElement('div'); pt.style.height='40px'; el.appendChild(pt);
+    
+    for(let i=0; i<max; i++) {
+        let d = document.createElement('div'); 
+        d.className='wheel-item';
+        d.innerText = i.toString().padStart(2,'0');
+        el.appendChild(d);
     }
+    
+    let pb = document.createElement('div'); pb.style.height='40px'; el.appendChild(pb);
+
+    el.addEventListener('scroll', () => {
+        let idx = Math.round(el.scrollTop / 40);
+        el.querySelectorAll('.wheel-item').forEach((it, i) => {
+            // Adjust for padding element
+            it.classList.toggle('active', i===idx);
+        });
+    });
 }
 
-function adjTimer(type, dir) {
-    if(type === 'th') {
-        timerVals.h += dir;
-        if(timerVals.h > 23) timerVals.h = 0;
-        if(timerVals.h < 0) timerVals.h = 23;
-        document.getElementById('th-val').innerText = pad(timerVals.h);
-    } else if(type === 'tm') {
-        timerVals.m += dir;
-        if(timerVals.m > 59) timerVals.m = 0;
-        if(timerVals.m < 0) timerVals.m = 59;
-        document.getElementById('tm-val').innerText = pad(timerVals.m);
-    } else {
-        timerVals.s += dir;
-        if(timerVals.s > 59) timerVals.s = 0;
-        if(timerVals.s < 0) timerVals.s = 59;
-        document.getElementById('ts-val').innerText = pad(timerVals.s);
-    }
+function moveWheel(id, dir) {
+    const el = document.getElementById(id);
+    el.scrollBy({ top: dir * 40, behavior: 'smooth' });
 }
+
+function getWheelVal(id) {
+    return Math.round(document.getElementById(id).scrollTop / 40);
+}
+
+function setWheelVal(id, val) {
+    const el = document.getElementById(id);
+    el.scrollTop = val * 40;
+}
+
+// Build Wheels
+mkWheel('wh-h', 24); mkWheel('wh-m', 60);
+mkWheel('wt-h', 24); mkWheel('wt-m', 60); mkWheel('wt-s', 60);
 
 // --- SET MANUAL TIME ---
 function setManTime() {
+    let h = getWheelVal('wh-h');
+    let m = getWheelVal('wh-m');
     const now = new Date();
     const target = new Date();
-    target.setHours(clockVals.h, clockVals.m, 0); 
+    target.setHours(h, m, 0); 
     timeOffset = target.getTime() - now.getTime();
     updateClock(); 
-    fetch(`/time?h=${clockVals.h}&m=${clockVals.m}&s=0`).catch(()=>{});
+    fetch(`/time?h=${h}&m=${m}&s=0`).catch(()=>{});
 }
 
 function syncBrowser() {
     timeOffset = 0; 
     updateClock(); 
     const d = new Date();
-    // Update picker visual too
-    clockVals.h = d.getHours();
-    clockVals.m = d.getMinutes();
-    document.getElementById('ch-val').innerText = pad(clockVals.h);
-    document.getElementById('cm-val').innerText = pad(clockVals.m);
-
+    // Sync wheels visually
+    setWheelVal('wh-h', d.getHours());
+    setWheelVal('wh-m', d.getMinutes());
+    
     fetch(`/time?h=${d.getHours()}&m=${d.getMinutes()}&s=${d.getSeconds()}`).catch(()=>{});
 }
 
 // --- TIMER LOGIC ---
 let tInt;
 function startT() {
-    let tot = timerVals.h*3600 + timerVals.m*60 + timerVals.s;
+    let h = getWheelVal('wt-h');
+    let m = getWheelVal('wt-m');
+    let s = getWheelVal('wt-s');
+    let tot = h*3600 + m*60 + s;
     if(tot <= 0) return;
 
     document.getElementById('t-select').style.display='none';
     document.getElementById('t-run').style.display='flex';
+    
+    const pad = (n) => n.toString().padStart(2,'0');
 
-    // Update display immediately
+    // Display start immediately
     let hh = Math.floor(tot/3600), mm = Math.floor((tot%3600)/60), ss = tot%60;
     document.getElementById('t-disp').innerText = `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
 
@@ -432,6 +468,13 @@ function nav(id, el) {
     document.getElementById(id).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     el.classList.add('active');
+    
+    // Refresh Scroll Position Trigger
+    if(id === 'v-clock' || id === 'v-timer') {
+         setTimeout(()=>{
+             document.querySelectorAll('.wheel-window').forEach(w => w.dispatchEvent(new Event('scroll')));
+         }, 100);
+    }
 }
 function sMode(m, el) {
     document.querySelectorAll('.mode-tag').forEach(b=>b.classList.remove('active'));
@@ -449,6 +492,9 @@ setInterval(()=>{
         }).catch(()=>{});
     }
 }, 2000);
+
+// Init initial visuals
+setTimeout(syncBrowser, 500);
 </script>
 </body>
 </html>
