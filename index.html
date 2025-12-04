@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Control System Hybrid</title>
+<title>Control System</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -178,7 +178,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 
 <div class="app">
     <div class="header">
-        <div class="title">CONTROL SYSTEM V3</div>
+        <div class="title">MEGAKNIGHT CONTROL SYSTEM</div>
     </div>
 
     <div id="v-clock" class="view active">
@@ -215,10 +215,10 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
                 </div>
             </div>
 
-            <button class="set-btn" onclick="setManTime()">ВСТАНОВИТИ ЧАС</button>
+            <button class="set-btn" onclick="setManTime()">SET TIME</button>
 
             <button class="sync-btn" onclick="syncBrowser()">
-                <i class="fa-solid fa-arrows-rotate"></i> Синхронізувати з телефоном
+                <i class="fa-solid fa-arrows-rotate"></i> Synchronize with your gadget
             </button>
         </div>
     </div>
@@ -226,7 +226,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
     <div id="v-led" class="view">
         <div class="card">
             <div class="switch-row">
-                <span><i class="fa-solid fa-robot"></i> Авто (Lux)</span>
+                <span><i class="fa-solid fa-robot"></i> Auto-brightness mode</span>
                 <label>
                     <input type="checkbox" id="autoCheck" onclick="togAuto()">
                     <div class="ios-switch"></div>
@@ -241,15 +241,15 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
             <div style="font-family:'Orbitron'; margin-bottom:15px" id="hexText">#00D2FF</div>
 
             <div class="slider-box">
-                <div class="slider-label"><span>Яскравість</span><span id="brV">100%</span></div>
+                <div class="slider-label"><span>Brightness</span><span id="brV">100%</span></div>
                 <input type="range" id="br" min="0" max="100" value="100">
             </div>
             <div class="slider-box">
-                <div class="slider-label"><span>Білий</span><span id="wV">0%</span></div>
+                <div class="slider-label"><span>White Channel</span><span id="wV">0%</span></div>
                 <input type="range" id="w" min="0" max="100" value="0">
             </div>
             <div class="slider-box">
-                <div class="slider-label"><span>Швидкість</span><span id="spV">50%</span></div>
+                <div class="slider-label"><span>Speed</span><span id="spV">50%</span></div>
                 <input type="range" id="sp" min="1" max="100" value="50">
             </div>
 
@@ -265,7 +265,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
     <div id="v-timer" class="view">
         <div class="card">
             <div id="t-select" class="timer-ui">
-                <div style="font-family:'Orbitron'; font-size:1rem; color:#aaa; margin-bottom:10px">ТАЙМЕР</div>
+                <div style="font-family:'Orbitron'; font-size:1rem; color:#aaa; margin-bottom:10px">TIMER</div>
                 
                 <div class="picker-container">
                     <div class="picker-col">
@@ -300,7 +300,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
             </div>
 
             <div id="t-run" class="timer-ui" style="display:none">
-                <div style="color:#aaa; font-family:'Roboto'; margin-top:20px">ЗАЛИШИЛОСЬ</div>
+                <div style="color:#aaa; font-family:'Roboto'; margin-top:20px">REMAINS:</div>
                 <div style="font-family:'Orbitron'; font-size:3.5rem; margin: 10px 0; text-shadow: 0 0 20px var(--accent);" id="t-disp">00:00:00</div>
                 <button class="play-btn" style="background:#ff4444; box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);" onclick="stopT()">
                     <i class="fa-solid fa-stop"></i>
