@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Control System</title>
+<title>Wadzik Control</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -16,7 +16,7 @@
   --accent: #00d2ff;
   --text: #fff;
   --danger: #ff4444;
-  --slot-height: 40px; /* Висота одного рядка барабана */
+  --slot-height: 40px; 
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; user-select: none; }
@@ -65,9 +65,9 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
     margin: 15px 0;
-    padding: 10px;
+    padding: 15px;
     background: rgba(0,0,0,0.2);
     border-radius: 16px;
     border: 1px solid var(--glass-border);
@@ -77,27 +77,24 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 60px; /* Fixed width prevents wobble */
+    width: 60px;
 }
 
 /* The Wheel Window */
 .wheel-window {
-    height: 120px; /* Shows exactly 3 items (40px * 3) */
+    height: 120px; /* 3 items */
     width: 100%;
     overflow-y: scroll;
-    overflow-x: hidden; /* Strict no horizontal */
+    overflow-x: hidden;
     scroll-snap-type: y mandatory;
     position: relative;
     background: rgba(0,0,0,0.3);
     border-radius: 8px;
     border: 1px solid rgba(255,255,255,0.05);
-    
-    /* Fade Effect */
     mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
     -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
 }
 
-/* The items inside */
 .wheel-item {
     height: var(--slot-height);
     display: flex; align-items: center; justify-content: center;
@@ -106,14 +103,13 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
 }
 .wheel-item.active { color: #fff; text-shadow: 0 0 10px var(--accent); transform: scale(1.1); }
 
-/* Center Highlight Bar (Overlay) */
 .highlight-bar {
     position: absolute; top: 50%; left: 0; width: 100%; height: var(--slot-height);
     transform: translateY(-50%);
     border-top: 1px solid var(--accent);
     border-bottom: 1px solid var(--accent);
     background: rgba(0, 210, 255, 0.05);
-    pointer-events: none; /* Let clicks pass through */
+    pointer-events: none;
     z-index: 10;
 }
 
@@ -125,7 +121,6 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
 .picker-arrow:active { transform: scale(1.2); color: #fff; opacity: 1; }
 
 .picker-sep { font-family: 'Orbitron'; font-size: 1.5rem; color: #666; padding-top: 0px; }
-
 
 .set-btn {
     width: 100%; margin-top: 10px; padding: 12px;
@@ -164,12 +159,8 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 .mode-tag { background: rgba(255,255,255,0.05); padding: 12px; text-align: center; border-radius: 8px; font-size: 0.75rem; font-weight: bold; color: #aaa; cursor: pointer; border: 1px solid transparent; }
 .mode-tag.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-/* TIMER UI */
-.timer-ui { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.play-btn { width: 70px; height: 70px; border-radius: 50%; background: var(--accent); border: none; color: #000; font-size: 1.8rem; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(0,210,255,0.3); }
-
 /* NAV */
-.nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #150a25; border: 1px solid var(--glass-border); border-radius: 40px; padding: 5px 10px; display: flex; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100; }
+.nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #150a25; border: 1px solid var(--glass-border); border-radius: 40px; padding: 5px 20px; display: flex; gap: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100; }
 .nav-btn { width: 50px; height: 50px; border-radius: 50%; color: rgba(255,255,255,0.4); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
 .nav-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow); }
 </style>
@@ -178,7 +169,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 
 <div class="app">
     <div class="header">
-        <div class="title">MEGAKNIGHT CONTROL SYSTEM</div>
+        <div class="title">WADZIK SYSTEM</div>
     </div>
 
     <div id="v-clock" class="view active">
@@ -215,10 +206,10 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
                 </div>
             </div>
 
-            <button class="set-btn" onclick="setManTime()">SET TIME</button>
+            <button class="set-btn" onclick="setManTime()">ВСТАНОВИТИ ЧАС</button>
 
             <button class="sync-btn" onclick="syncBrowser()">
-                <i class="fa-solid fa-arrows-rotate"></i> Synchronize with your gadget
+                <i class="fa-solid fa-arrows-rotate"></i> Синхронізувати з телефоном
             </button>
         </div>
     </div>
@@ -226,7 +217,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
     <div id="v-led" class="view">
         <div class="card">
             <div class="switch-row">
-                <span><i class="fa-solid fa-robot"></i> Auto-brightness mode</span>
+                <span><i class="fa-solid fa-robot"></i> Авто (Lux)</span>
                 <label>
                     <input type="checkbox" id="autoCheck" onclick="togAuto()">
                     <div class="ios-switch"></div>
@@ -241,15 +232,15 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
             <div style="font-family:'Orbitron'; margin-bottom:15px" id="hexText">#00D2FF</div>
 
             <div class="slider-box">
-                <div class="slider-label"><span>Brightness</span><span id="brV">100%</span></div>
+                <div class="slider-label"><span>Яскравість</span><span id="brV">100%</span></div>
                 <input type="range" id="br" min="0" max="100" value="100">
             </div>
             <div class="slider-box">
-                <div class="slider-label"><span>White Channel</span><span id="wV">0%</span></div>
+                <div class="slider-label"><span>Білий</span><span id="wV">0%</span></div>
                 <input type="range" id="w" min="0" max="100" value="0">
             </div>
             <div class="slider-box">
-                <div class="slider-label"><span>Speed</span><span id="spV">50%</span></div>
+                <div class="slider-label"><span>Швидкість</span><span id="spV">50%</span></div>
                 <input type="range" id="sp" min="1" max="100" value="50">
             </div>
 
@@ -261,59 +252,11 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
             </div>
         </div>
     </div>
-
-    <div id="v-timer" class="view">
-        <div class="card">
-            <div id="t-select" class="timer-ui">
-                <div style="font-family:'Orbitron'; font-size:1rem; color:#aaa; margin-bottom:10px">TIMER</div>
-                
-                <div class="picker-container">
-                    <div class="picker-col">
-                        <button class="picker-arrow" onclick="moveWheel('wt-h', -1)"><i class="fa-solid fa-chevron-up"></i></button>
-                        <div style="position:relative; width:100%">
-                            <div class="highlight-bar"></div>
-                            <div class="wheel-window" id="wt-h"></div>
-                        </div>
-                        <button class="picker-arrow" onclick="moveWheel('wt-h', 1)"><i class="fa-solid fa-chevron-down"></i></button>
-                    </div>
-                    <div class="picker-sep">:</div>
-                    <div class="picker-col">
-                        <button class="picker-arrow" onclick="moveWheel('wt-m', -1)"><i class="fa-solid fa-chevron-up"></i></button>
-                        <div style="position:relative; width:100%">
-                            <div class="highlight-bar"></div>
-                            <div class="wheel-window" id="wt-m"></div>
-                        </div>
-                        <button class="picker-arrow" onclick="moveWheel('wt-m', 1)"><i class="fa-solid fa-chevron-down"></i></button>
-                    </div>
-                    <div class="picker-sep">:</div>
-                    <div class="picker-col">
-                        <button class="picker-arrow" onclick="moveWheel('wt-s', -1)"><i class="fa-solid fa-chevron-up"></i></button>
-                        <div style="position:relative; width:100%">
-                            <div class="highlight-bar"></div>
-                            <div class="wheel-window" id="wt-s"></div>
-                        </div>
-                        <button class="picker-arrow" onclick="moveWheel('wt-s', 1)"><i class="fa-solid fa-chevron-down"></i></button>
-                    </div>
-                </div>
-
-                <button class="play-btn" onclick="startT()"><i class="fa-solid fa-play"></i></button>
-            </div>
-
-            <div id="t-run" class="timer-ui" style="display:none">
-                <div style="color:#aaa; font-family:'Roboto'; margin-top:20px">REMAINS:</div>
-                <div style="font-family:'Orbitron'; font-size:3.5rem; margin: 10px 0; text-shadow: 0 0 20px var(--accent);" id="t-disp">00:00:00</div>
-                <button class="play-btn" style="background:#ff4444; box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);" onclick="stopT()">
-                    <i class="fa-solid fa-stop"></i>
-                </button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <div class="nav">
     <div class="nav-btn active" onclick="nav('v-clock', this)"><i class="fa-solid fa-clock"></i></div>
     <div class="nav-btn" onclick="nav('v-led', this)"><i class="fa-solid fa-lightbulb"></i></div>
-    <div class="nav-btn" onclick="nav('v-timer', this)"><i class="fa-solid fa-hourglass-half"></i></div>
 </div>
 
 <script>
@@ -345,12 +288,11 @@ setInterval(updateClock, 1000); updateClock();
 let ls=0;
 function send(u){let n=Date.now();if(n-ls<50)return;ls=n;fetch(u).catch(()=>{})}
 
-// --- WHEEL BUILDER (Improved) ---
+// --- WHEEL BUILDER (Strict Hybrid) ---
 function mkWheel(id, max) {
     const el = document.getElementById(id);
     el.innerHTML = '';
-    // Padding Top/Bottom to center the first/last items
-    // Since view height is 120px and item is 40px, we need 40px padding top/bottom
+    // Padding
     let pt = document.createElement('div'); pt.style.height='40px'; el.appendChild(pt);
     
     for(let i=0; i<max; i++) {
@@ -365,7 +307,6 @@ function mkWheel(id, max) {
     el.addEventListener('scroll', () => {
         let idx = Math.round(el.scrollTop / 40);
         el.querySelectorAll('.wheel-item').forEach((it, i) => {
-            // Adjust for padding element
             it.classList.toggle('active', i===idx);
         });
     });
@@ -387,7 +328,6 @@ function setWheelVal(id, val) {
 
 // Build Wheels
 mkWheel('wh-h', 24); mkWheel('wh-m', 60);
-mkWheel('wt-h', 24); mkWheel('wt-m', 60); mkWheel('wt-s', 60);
 
 // --- SET MANUAL TIME ---
 function setManTime() {
@@ -410,37 +350,6 @@ function syncBrowser() {
     setWheelVal('wh-m', d.getMinutes());
     
     fetch(`/time?h=${d.getHours()}&m=${d.getMinutes()}&s=${d.getSeconds()}`).catch(()=>{});
-}
-
-// --- TIMER LOGIC ---
-let tInt;
-function startT() {
-    let h = getWheelVal('wt-h');
-    let m = getWheelVal('wt-m');
-    let s = getWheelVal('wt-s');
-    let tot = h*3600 + m*60 + s;
-    if(tot <= 0) return;
-
-    document.getElementById('t-select').style.display='none';
-    document.getElementById('t-run').style.display='flex';
-    
-    const pad = (n) => n.toString().padStart(2,'0');
-
-    // Display start immediately
-    let hh = Math.floor(tot/3600), mm = Math.floor((tot%3600)/60), ss = tot%60;
-    document.getElementById('t-disp').innerText = `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
-
-    tInt = setInterval(() => {
-        tot--;
-        if(tot < 0) { stopT(); return; }
-        let hh = Math.floor(tot/3600), mm = Math.floor((tot%3600)/60), ss = tot%60;
-        document.getElementById('t-disp').innerText = `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
-    }, 1000);
-}
-function stopT() {
-    clearInterval(tInt);
-    document.getElementById('t-run').style.display='none';
-    document.getElementById('t-select').style.display='flex';
 }
 
 // --- LED LOGIC ---
@@ -469,8 +378,8 @@ function nav(id, el) {
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     el.classList.add('active');
     
-    // Refresh Scroll Position Trigger
-    if(id === 'v-clock' || id === 'v-timer') {
+    // Refresh Scroll for strict snap
+    if(id === 'v-clock') {
          setTimeout(()=>{
              document.querySelectorAll('.wheel-window').forEach(w => w.dispatchEvent(new Event('scroll')));
          }, 100);
