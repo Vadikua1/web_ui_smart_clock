@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>КОНТРОЛЬ</title>
+<title>Control System V2</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -26,7 +26,7 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
 
 /* HEADER */
 .header { padding: 15px 0; text-align: center; margin-bottom: 5px; }
-.title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: rgba(255,255,255,0.9); }
+.title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: rgba(255,255,255,0.9); text-shadow: 0 0 10px rgba(0, 210, 255, 0.3); }
 
 /* VIEWS */
 .view { display: none; flex: 1; flex-direction: column; align-items: center; width: 100%; overflow-y: auto; padding-bottom: 100px; }
@@ -59,50 +59,73 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
 .tick { position: absolute; width: 2px; height: 10px; background: rgba(255,255,255,0.3); left: 50%; transform-origin: center 100px; top: 0; }
 .tick.major { width: 4px; height: 15px; background: #fff; }
 
-/* --- NEW WHEEL PICKER STYLES --- */
-.picker-container {
+/* --- NEW DIGITAL PICKER STYLES --- */
+.digital-picker {
     display: flex;
-    width: 100%;
-    margin-top: 15px;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
     gap: 10px;
-}
-
-.wheels-area {
-    /* FIX: Added fixed height here so it doesn't explode */
-    height: 180px; 
-    flex: 3;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
     border-radius: 16px;
     border: 1px solid var(--glass-border);
-    display: flex;
-    justify-content: center;
-    position: relative;
-    /* Mask for fade effect */
-    mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
-    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
 }
 
-/* Center Highlight Bar */
-.wheels-area::after {
-    content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 40px;
-    background: rgba(255,255,255,0.05); transform: translateY(-50%); pointer-events: none;
-    border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);
+.picker-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
+.picker-btn {
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-size: 1.5rem;
+    padding: 5px 15px;
+    cursor: pointer;
+    transition: 0.2s;
+    opacity: 0.7;
+}
+.picker-btn:active { transform: scale(0.8); opacity: 1; color: #fff; }
+
+.picker-val {
+    font-family: 'Orbitron';
+    font-size: 2rem;
+    color: #fff;
+    min-width: 50px;
+    text-align: center;
+    text-shadow: 0 0 10px var(--accent);
+    margin: 5px 0;
+}
+
+.picker-sep {
+    font-family: 'Orbitron';
+    font-size: 2rem;
+    color: #888;
+    margin-top: -5px;
+    animation: blink 2s infinite;
+}
+
+@keyframes blink { 50% { opacity: 0.3; } }
 
 .set-btn {
-    flex: 1;
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
     background: var(--accent);
-    border-radius: 16px;
+    border-radius: 12px;
     border: none;
     color: #000;
     font-family: 'Orbitron';
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1rem;
     cursor: pointer;
     box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
     transition: 0.2s;
 }
-.set-btn:active { transform: scale(0.95); opacity: 0.8; }
+.set-btn:active { transform: scale(0.98); opacity: 0.8; }
 
 .sync-btn {
     width: 100%; margin-top: 15px; padding: 12px;
@@ -111,11 +134,6 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .sync-btn:active { background: rgba(255,255,255,0.1); color: #fff; border-color: #fff; }
-
-/* SHARED WHEEL STYLES */
-.wheel { width: 50px; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; padding: 70px 0; }
-.wheel-item { height: 40px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-size: 1.4rem; color: rgba(255,255,255,0.2); scroll-snap-align: center; }
-.wheel-item.active { color: #fff; transform: scale(1.1); text-shadow: 0 0 10px var(--accent); }
 
 
 /* LED & SLIDERS */
@@ -131,7 +149,7 @@ input[type="color"] { position: absolute; width: 100%; height: 100%; opacity: 0;
 
 .slider-box { width: 100%; margin-top: 15px; }
 .slider-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; margin-bottom: 5px; }
-input[type=range] { width: 100%; height: 6px; background: #333; border-radius: 10px; -webkit-appearance: none; }
+input[type=range] { width: 100%; height: 6px; background: #333; border-radius: 10px; -webkit-appearance: none; outline: none; }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px var(--accent); }
 
 .modes-box { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; margin-top: 20px; }
@@ -140,7 +158,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 
 /* TIMER UI */
 .timer-ui { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.play-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); border: none; color: #000; font-size: 1.5rem; margin-top: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.play-btn { width: 70px; height: 70px; border-radius: 50%; background: var(--accent); border: none; color: #000; font-size: 1.8rem; margin-top: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(0,210,255,0.3); }
 
 /* NAV */
 .nav { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #150a25; border: 1px solid var(--glass-border); border-radius: 40px; padding: 5px 10px; display: flex; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100; }
@@ -152,7 +170,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 
 <div class="app">
     <div class="header">
-        <div class="title">GIGACOOL CONTROL SYSTEM</div>
+        <div class="title">MEGAKNIGHT TOP CONTROL</div>
     </div>
 
     <div id="v-clock" class="view active">
@@ -167,15 +185,23 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
             <div style="font-family:'Orbitron'; font-size:2.5rem;" id="digTime">00:00</div>
             <div style="color:#888; font-size:0.9rem; margin-bottom: 5px" id="dateStr">--</div>
 
-            <div class="picker-container">
-                <div class="wheels-area">
-                    <div class="wheel" id="wc-h"></div> <div style="font-family:'Orbitron'; font-size:1.5rem; padding-top:75px; color:#aaa">:</div>
-                    <div class="wheel" id="wc-m"></div> </div>
-                <button class="set-btn" onclick="setManTime()">SET</button>
+            <div class="digital-picker">
+                <div class="picker-unit">
+                    <button class="picker-btn" onclick="adjTime('ch', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                    <div class="picker-val" id="ch-val">12</div>
+                    <button class="picker-btn" onclick="adjTime('ch', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+                <div class="picker-sep">:</div>
+                <div class="picker-unit">
+                    <button class="picker-btn" onclick="adjTime('cm', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                    <div class="picker-val" id="cm-val">00</div>
+                    <button class="picker-btn" onclick="adjTime('cm', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                </div>
             </div>
+            <button class="set-btn" onclick="setManTime()">ВСТАНОВИТИ ЧАС</button>
 
             <button class="sync-btn" onclick="syncBrowser()">
-                <i class="fa-solid fa-arrows-rotate"></i> Синхронізувати з пристроєм
+                <i class="fa-solid fa-arrows-rotate"></i> Синхронізувати з телефоном
             </button>
         </div>
     </div>
@@ -222,19 +248,35 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
     <div id="v-timer" class="view">
         <div class="card">
             <div id="t-select" class="timer-ui">
-                <div class="wheels-area" style="width:100%">
-                    <div class="wheel" id="wh"></div>
-                    <div style="font-family:'Orbitron'; font-size:1.5rem; padding-top:75px; color:#aaa">:</div>
-                    <div class="wheel" id="wm"></div>
-                    <div style="font-family:'Orbitron'; font-size:1.5rem; padding-top:75px; color:#aaa">:</div>
-                    <div class="wheel" id="ws"></div>
+                <div style="font-family:'Orbitron'; font-size:1rem; color:#aaa; margin-bottom:10px">НАЛАШТУВАННЯ ТАЙМЕРА</div>
+                
+                <div class="digital-picker">
+                    <div class="picker-unit">
+                        <button class="picker-btn" onclick="adjTimer('th', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                        <div class="picker-val" id="th-val">00</div>
+                        <button class="picker-btn" onclick="adjTimer('th', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                    <div class="picker-sep">:</div>
+                    <div class="picker-unit">
+                        <button class="picker-btn" onclick="adjTimer('tm', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                        <div class="picker-val" id="tm-val">05</div>
+                        <button class="picker-btn" onclick="adjTimer('tm', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
+                    <div class="picker-sep">:</div>
+                    <div class="picker-unit">
+                        <button class="picker-btn" onclick="adjTimer('ts', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                        <div class="picker-val" id="ts-val">00</div>
+                        <button class="picker-btn" onclick="adjTimer('ts', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                    </div>
                 </div>
+
                 <button class="play-btn" onclick="startT()"><i class="fa-solid fa-play"></i></button>
             </div>
 
             <div id="t-run" class="timer-ui" style="display:none">
-                <div style="font-family:'Orbitron'; font-size:3rem; margin: 30px 0" id="t-disp">00:00:00</div>
-                <button class="play-btn" style="background:#ff4444" onclick="stopT()">
+                <div style="color:#aaa; font-family:'Roboto'; margin-top:20px">ЗАЛИШИЛОСЬ</div>
+                <div style="font-family:'Orbitron'; font-size:3.5rem; margin: 10px 0; text-shadow: 0 0 20px var(--accent);" id="t-disp">00:00:00</div>
+                <button class="play-btn" style="background:#ff4444; box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);" onclick="stopT()">
                     <i class="fa-solid fa-stop"></i>
                 </button>
             </div>
@@ -277,63 +319,86 @@ setInterval(updateClock, 1000); updateClock();
 let ls=0;
 function send(u){let n=Date.now();if(n-ls<50)return;ls=n;fetch(u).catch(()=>{})}
 
-// --- WHEEL BUILDER ---
-function mkWheel(id, max) {
-    const el = document.getElementById(id);
-    for(let i=0; i<max; i++) {
-        let d = document.createElement('div'); d.className='wheel-item';
-        d.innerText = i.toString().padStart(2,'0');
-        el.appendChild(d);
+// --- DIGITAL PICKER LOGIC ---
+let clockVals = { h: 12, m: 0 };
+let timerVals = { h: 0, m: 5, s: 0 };
+
+function pad(n) { return n.toString().padStart(2,'0'); }
+
+function adjTime(type, dir) {
+    if(type === 'ch') {
+        clockVals.h += dir;
+        if(clockVals.h > 23) clockVals.h = 0;
+        if(clockVals.h < 0) clockVals.h = 23;
+        document.getElementById('ch-val').innerText = pad(clockVals.h);
+    } else {
+        clockVals.m += dir;
+        if(clockVals.m > 59) clockVals.m = 0;
+        if(clockVals.m < 0) clockVals.m = 59;
+        document.getElementById('cm-val').innerText = pad(clockVals.m);
     }
-    el.addEventListener('scroll', () => {
-        let idx = Math.round(el.scrollTop / 40);
-        el.querySelectorAll('.wheel-item').forEach((it, i) => it.classList.toggle('active', i===idx));
-    });
-    setTimeout(()=>el.dispatchEvent(new Event('scroll')), 100);
 }
 
-// Build Timer Wheels
-mkWheel('wh', 24); mkWheel('wm', 60); mkWheel('ws', 60);
-// Build Clock Picker Wheels
-mkWheel('wc-h', 24); mkWheel('wc-m', 60);
+function adjTimer(type, dir) {
+    if(type === 'th') {
+        timerVals.h += dir;
+        if(timerVals.h > 23) timerVals.h = 0;
+        if(timerVals.h < 0) timerVals.h = 23;
+        document.getElementById('th-val').innerText = pad(timerVals.h);
+    } else if(type === 'tm') {
+        timerVals.m += dir;
+        if(timerVals.m > 59) timerVals.m = 0;
+        if(timerVals.m < 0) timerVals.m = 59;
+        document.getElementById('tm-val').innerText = pad(timerVals.m);
+    } else {
+        timerVals.s += dir;
+        if(timerVals.s > 59) timerVals.s = 0;
+        if(timerVals.s < 0) timerVals.s = 59;
+        document.getElementById('ts-val').innerText = pad(timerVals.s);
+    }
+}
 
 // --- SET MANUAL TIME ---
 function setManTime() {
-    let h = Math.round(document.getElementById('wc-h').scrollTop/40);
-    let m = Math.round(document.getElementById('wc-m').scrollTop/40);
     const now = new Date();
     const target = new Date();
-    target.setHours(h, m, 0); 
+    target.setHours(clockVals.h, clockVals.m, 0); 
     timeOffset = target.getTime() - now.getTime();
     updateClock(); 
-    fetch(`/time?h=${h}&m=${m}&s=0`).catch(()=>{});
+    fetch(`/time?h=${clockVals.h}&m=${clockVals.m}&s=0`).catch(()=>{});
 }
 
 function syncBrowser() {
     timeOffset = 0; 
     updateClock(); 
     const d = new Date();
+    // Update picker visual too
+    clockVals.h = d.getHours();
+    clockVals.m = d.getMinutes();
+    document.getElementById('ch-val').innerText = pad(clockVals.h);
+    document.getElementById('cm-val').innerText = pad(clockVals.m);
+
     fetch(`/time?h=${d.getHours()}&m=${d.getMinutes()}&s=${d.getSeconds()}`).catch(()=>{});
 }
 
 // --- TIMER LOGIC ---
 let tInt;
 function startT() {
-    let h = Math.round(document.getElementById('wh').scrollTop/40);
-    let m = Math.round(document.getElementById('wm').scrollTop/40);
-    let s = Math.round(document.getElementById('ws').scrollTop/40);
-    let tot = h*3600 + m*60 + s;
+    let tot = timerVals.h*3600 + timerVals.m*60 + timerVals.s;
     if(tot <= 0) return;
 
     document.getElementById('t-select').style.display='none';
     document.getElementById('t-run').style.display='flex';
 
+    // Update display immediately
+    let hh = Math.floor(tot/3600), mm = Math.floor((tot%3600)/60), ss = tot%60;
+    document.getElementById('t-disp').innerText = `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
+
     tInt = setInterval(() => {
         tot--;
         if(tot < 0) { stopT(); return; }
         let hh = Math.floor(tot/3600), mm = Math.floor((tot%3600)/60), ss = tot%60;
-        document.getElementById('t-disp').innerText = 
-            `${hh.toString().padStart(2,'0')}:${mm.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}`;
+        document.getElementById('t-disp').innerText = `${pad(hh)}:${pad(mm)}:${pad(ss)}`;
     }, 1000);
 }
 function stopT() {
