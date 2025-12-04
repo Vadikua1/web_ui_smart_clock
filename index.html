@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Wadzik Hub</title>
+<title>Smart CLock Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -15,7 +15,7 @@
   --glass-border: rgba(255, 255, 255, 0.1);
   --accent: #00d2ff;
   --text: #fff;
-  --input-bg: rgba(0, 0, 0, 0.4);
+  --danger: #ff4444;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; user-select: none; }
@@ -25,7 +25,7 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
 .app { width: 100%; max-width: 420px; margin: 0 auto; height: 100%; display: flex; flex-direction: column; padding: 20px; position: relative; }
 
 /* HEADER */
-.header { padding: 15px 0; text-align: center; margin-bottom: 10px; }
+.header { padding: 15px 0; text-align: center; margin-bottom: 5px; }
 .title { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; letter-spacing: 2px; color: rgba(255,255,255,0.9); }
 
 /* VIEWS */
@@ -37,81 +37,85 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
   width: 100%;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 25px;
+  border-radius: 24px;
+  padding: 20px;
   border: 1px solid var(--glass-border);
   display: flex; flex-direction: column; align-items: center;
 }
 
-/* CLOCK */
+/* CLOCK FACE */
 .clock-face {
-    width: 220px; height: 220px; border-radius: 50%;
+    width: 200px; height: 200px; border-radius: 50%;
     background: radial-gradient(circle at center, transparent 50%, rgba(0,0,0,0.4));
-    border: 4px solid rgba(255,255,255,0.05);
-    position: relative; margin-bottom: 15px;
+    border: 3px solid rgba(255,255,255,0.05);
+    position: relative; margin-bottom: 10px;
     box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
 }
 .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom center; border-radius: 4px; transform: translateX(-50%) rotate(0deg); }
-.hour { width: 6px; height: 55px; background: #fff; z-index: 2; }
-.minute { width: 4px; height: 85px; background: var(--accent); z-index: 3; }
-.second { width: 2px; height: 95px; background: #ff4444; z-index: 4; }
-.center-dot { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); z-index: 5; }
-.tick { position: absolute; width: 2px; height: 10px; background: rgba(255,255,255,0.3); left: 50%; transform-origin: center 110px; top: 0; }
+.hour { width: 6px; height: 50px; background: #fff; z-index: 2; }
+.minute { width: 4px; height: 75px; background: var(--accent); z-index: 3; }
+.second { width: 2px; height: 85px; background: var(--danger); z-index: 4; }
+.center-dot { position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); z-index: 5; }
+.tick { position: absolute; width: 2px; height: 10px; background: rgba(255,255,255,0.3); left: 50%; transform-origin: center 100px; top: 0; }
 .tick.major { width: 4px; height: 15px; background: #fff; }
 
-/* --- NEW CONTROL PANEL (Solid Style) --- */
-.control-panel {
-    width: 100%;
-    background: var(--input-bg);
-    border-radius: 12px;
-    padding: 5px;
+/* --- NEW WHEEL PICKER STYLES --- */
+.picker-container {
     display: flex;
-    gap: 5px;
-    margin-top: 20px;
-    border: 1px solid var(--glass-border);
-}
-
-.time-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-family: 'Orbitron';
-    font-size: 1.2rem;
-    text-align: center;
-    padding: 10px;
-    outline: none;
-}
-.time-input:focus { background: rgba(255,255,255,0.05); border-radius: 8px; }
-
-.colon { padding: 10px 0; font-family: 'Orbitron'; font-size: 1.2rem; color: #888; }
-
-.btn-solid {
-    background: var(--accent);
-    color: #000;
-    border: none;
-    font-weight: bold;
-    font-family: 'Orbitron';
-    padding: 0 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.1s;
-}
-.btn-solid:active { transform: scale(0.95); opacity: 0.8; }
-
-.btn-sync {
     width: 100%;
-    margin-top: 10px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--glass-border);
-    color: #aaa;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
+    height: 140px;
+    margin-top: 15px;
+    gap: 10px;
 }
-.btn-sync:active { background: rgba(255,255,255,0.1); color: #fff; }
+
+.wheels-area {
+    flex: 3;
+    background: rgba(0,0,0,0.3);
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: center;
+    position: relative;
+    /* Mask for fade effect */
+    mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+}
+
+/* Center Highlight Bar */
+.wheels-area::after {
+    content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 40px;
+    background: rgba(255,255,255,0.05); transform: translateY(-50%); pointer-events: none;
+    border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.set-btn {
+    flex: 1;
+    background: var(--accent);
+    border-radius: 16px;
+    border: none;
+    color: #000;
+    font-family: 'Orbitron';
+    font-weight: bold;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+    transition: 0.2s;
+}
+.set-btn:active { transform: scale(0.95); opacity: 0.8; }
+
+.sync-btn {
+    width: 100%; margin-top: 15px; padding: 12px;
+    background: transparent; border: 1px solid var(--glass-border); border-radius: 12px;
+    color: #888; font-family: 'Orbitron'; font-size: 0.8rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.sync-btn:active { background: rgba(255,255,255,0.1); color: #fff; border-color: #fff; }
+
+/* SHARED WHEEL STYLES (Used for Clock Picker AND Timer) */
+.wheel { width: 50px; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; padding: 50px 0; }
+.wheel-item { height: 40px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-size: 1.4rem; color: rgba(255,255,255,0.2); scroll-snap-align: center; }
+.wheel-item.active { color: #fff; transform: scale(1.1); text-shadow: 0 0 10px var(--accent); }
+
 
 /* LED & SLIDERS */
 .switch-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 0.9rem; color: #aaa; }
@@ -133,13 +137,8 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 .mode-tag { background: rgba(255,255,255,0.05); padding: 12px; text-align: center; border-radius: 8px; font-size: 0.75rem; font-weight: bold; color: #aaa; cursor: pointer; border: 1px solid transparent; }
 .mode-tag.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-/* TIMER */
+/* TIMER UI */
 .timer-ui { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.wheels-wrap { display: flex; gap: 10px; justify-content: center; height: 180px; width: 100%; position: relative; mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent); }
-.wheels-wrap::after { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 40px; background: rgba(255,255,255,0.05); transform: translateY(-50%); pointer-events: none; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1); }
-.wheel { width: 50px; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; padding: 70px 0; }
-.wheel-item { height: 40px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; font-size: 1.5rem; color: rgba(255,255,255,0.3); scroll-snap-align: center; }
-.wheel-item.active { color: #fff; transform: scale(1.1); }
 .play-btn { width: 60px; height: 60px; border-radius: 50%; background: var(--accent); border: none; color: #000; font-size: 1.5rem; margin-top: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
 /* NAV */
@@ -152,7 +151,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 
 <div class="app">
     <div class="header">
-        <div class="title">WADZIK HUB</div>
+        <div class="title">SUPER COOL CONTROL SYSTEM</div>
     </div>
 
     <div id="v-clock" class="view active">
@@ -165,17 +164,17 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
             </div>
             
             <div style="font-family:'Orbitron'; font-size:2.5rem;" id="digTime">00:00</div>
-            <div style="color:#888; font-size:0.9rem; margin-bottom: 10px" id="dateStr">--</div>
+            <div style="color:#888; font-size:0.9rem; margin-bottom: 5px" id="dateStr">--</div>
 
-            <div class="control-panel">
-                <input type="number" id="hInp" class="time-input" placeholder="HH" oninput="limit(this,23)">
-                <div class="colon">:</div>
-                <input type="number" id="mInp" class="time-input" placeholder="MM" oninput="limit(this,59)">
-                <button class="btn-solid" onclick="setManTime()">OK</button>
+            <div class="picker-container">
+                <div class="wheels-area">
+                    <div class="wheel" id="wc-h"></div> <div style="font-family:'Orbitron'; font-size:1.5rem; padding-top:55px; color:#aaa">:</div>
+                    <div class="wheel" id="wc-m"></div> </div>
+                <button class="set-btn" onclick="setManTime()">SET</button>
             </div>
 
-            <button class="btn-sync" onclick="syncBrowser()">
-                <i class="fa-solid fa-rotate-right"></i> Скинути на реальний час
+            <button class="sync-btn" onclick="syncBrowser()">
+                <i class="fa-solid fa-arrows-rotate"></i> Синхронізувати з пристроєм
             </button>
         </div>
     </div>
@@ -222,11 +221,11 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
     <div id="v-timer" class="view">
         <div class="card">
             <div id="t-select" class="timer-ui">
-                <div class="wheels-wrap">
+                <div class="wheels-area" style="width:100%">
                     <div class="wheel" id="wh"></div>
-                    <div style="font-family:'Orbitron'; font-size:1.5rem; padding-bottom:5px">:</div>
+                    <div style="font-family:'Orbitron'; font-size:1.5rem; padding-top:55px; color:#aaa">:</div>
                     <div class="wheel" id="wm"></div>
-                    <div style="font-family:'Orbitron'; font-size:1.5rem; padding-bottom:5px">:</div>
+                    <div style="font-family:'Orbitron'; font-size:1.5rem; padding-top:55px; color:#aaa">:</div>
                     <div class="wheel" id="ws"></div>
                 </div>
                 <button class="play-btn" onclick="startT()"><i class="fa-solid fa-play"></i></button>
@@ -249,7 +248,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 </div>
 
 <script>
-// --- CLOCK LOGIC ---
+// --- CLOCK & LOGIC ---
 const face = document.getElementById('clockFace');
 for(let i=0;i<12;i++){
     let tk = document.createElement('div');
@@ -258,11 +257,11 @@ for(let i=0;i<12;i++){
     face.appendChild(tk);
 }
 
-// Global offset variable to handle Manual vs System time
+// Global offset in milliseconds
 let timeOffset = 0; 
 
 function updateClock(){
-    // Current time + offset
+    // Visual clock = Real Time + Offset
     const d = new Date(Date.now() + timeOffset);
     
     const h=d.getHours(), m=d.getMinutes(), s=d.getSeconds();
@@ -280,42 +279,7 @@ setInterval(updateClock, 1000); updateClock();
 let ls=0;
 function send(u){let n=Date.now();if(n-ls<50)return;ls=n;fetch(u).catch(()=>{})}
 
-// --- MANUAL TIME SET ---
-function limit(el, max) {
-    if(el.value > max) el.value = max;
-    if(el.value.length > 2) el.value = el.value.slice(0,2);
-}
-
-function setManTime() {
-    let h = parseInt(document.getElementById('hInp').value);
-    let m = parseInt(document.getElementById('mInp').value);
-    
-    if(isNaN(h) || isNaN(m)) return;
-
-    // Calculate offset
-    const now = new Date();
-    const target = new Date();
-    target.setHours(h, m, 0); // Set seconds to 0 for precision
-    
-    // Difference between Desired Time and Real Time
-    timeOffset = target.getTime() - now.getTime();
-    
-    updateClock(); // Update view immediately
-    
-    // Send to ESP
-    fetch(`/time?h=${h}&m=${m}&s=0`).catch(()=>{});
-}
-
-function syncBrowser() {
-    // Reset offset to 0 (Real Time)
-    timeOffset = 0;
-    updateClock();
-    
-    const d = new Date();
-    fetch(`/time?h=${d.getHours()}&m=${d.getMinutes()}&s=${d.getSeconds()}`).catch(()=>{});
-}
-
-// --- REST OF UI ---
+// --- WHEEL BUILDER ---
 function mkWheel(id, max) {
     const el = document.getElementById(id);
     for(let i=0; i<max; i++) {
@@ -327,10 +291,46 @@ function mkWheel(id, max) {
         let idx = Math.round(el.scrollTop / 40);
         el.querySelectorAll('.wheel-item').forEach((it, i) => it.classList.toggle('active', i===idx));
     });
+    // Initial highlight
     setTimeout(()=>el.dispatchEvent(new Event('scroll')), 100);
 }
-mkWheel('wh', 24); mkWheel('wm', 60); mkWheel('ws', 60);
 
+// Build Timer Wheels
+mkWheel('wh', 24); mkWheel('wm', 60); mkWheel('ws', 60);
+// Build Clock Picker Wheels
+mkWheel('wc-h', 24); mkWheel('wc-m', 60);
+
+// --- SET MANUAL TIME ---
+function setManTime() {
+    // Get values from Clock wheels
+    let h = Math.round(document.getElementById('wc-h').scrollTop/40);
+    let m = Math.round(document.getElementById('wc-m').scrollTop/40);
+
+    // Calculate offset
+    const now = new Date();
+    const target = new Date();
+    target.setHours(h, m, 0); // Assuming 0 seconds for manual set
+    
+    // Determine offset
+    timeOffset = target.getTime() - now.getTime();
+    
+    // Update visual clock immediately
+    updateClock(); 
+    
+    // Send to ESP
+    fetch(`/time?h=${h}&m=${m}&s=0`).catch(()=>{});
+}
+
+// --- SYNC WITH DEVICE ---
+function syncBrowser() {
+    timeOffset = 0; // Reset offset
+    updateClock(); // Snap back to real time
+    
+    const d = new Date();
+    fetch(`/time?h=${d.getHours()}&m=${d.getMinutes()}&s=${d.getSeconds()}`).catch(()=>{});
+}
+
+// --- TIMER LOGIC ---
 let tInt;
 function startT() {
     let h = Math.round(document.getElementById('wh').scrollTop/40);
@@ -356,7 +356,7 @@ function stopT() {
     document.getElementById('t-select').style.display='flex';
 }
 
-// LED Updates
+// --- LED LOGIC ---
 function upd() {
     let h = document.getElementById('cp').value;
     let br = document.getElementById('br').value;
