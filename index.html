@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Control</title>
+<title>Megaknight System</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -78,7 +78,7 @@ body { margin: 0; background: var(--grad); color: var(--text); font-family: 'Rob
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 1; /* Stretch to fit */
+    flex: 1; 
 }
 
 /* The Wheel Window */
@@ -173,7 +173,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 
 <div class="app">
     <div class="header">
-        <div class="title">MEGAKNIGHT SYSTEM MEGACOOL CONTROL</div>
+        <div class="title">MEGAKNIGHT SYSTEM MEGACOOL CONTROL EVOLUTION</div>
     </div>
 
     <div id="v-clock" class="view active">
@@ -373,7 +373,7 @@ mkWheel('wh-d', 1, 31);
 mkWheel('wh-mo', 1, 12);
 mkWheel('wh-y', 2024, 2040);
 
-// --- SET SYSTEM TIME ---
+// --- SET SYSTEM TIME (FIXED LOGIC) ---
 function setSysTime() {
     let h = getWheelVal('wh-h');
     let m = getWheelVal('wh-m');
@@ -383,13 +383,18 @@ function setSysTime() {
     
     const now = new Date();
     const target = new Date();
+    
+    // CRITICAL FIX: Set full date components
+    target.setFullYear(y);
+    target.setMonth(mo - 1); // Months are 0-indexed in JS
+    target.setDate(d);
     target.setHours(h, m, 0); 
-    // Just simple offset calc for the clock face
+    
+    // Recalculate offset based on FULL date
     timeOffset = target.getTime() - now.getTime();
     updateClock(); 
     
-    // Send Time AND Date
-    // Assumes embedded server handles these endpoints
+    // Send to device
     fetch(`/time?h=${h}&m=${m}&s=0`).catch(()=>{});
     setTimeout(() => {
         fetch(`/date?d=${d}&m=${mo}&y=${y}`).catch(()=>{});
@@ -400,11 +405,12 @@ function syncBrowser() {
     timeOffset = 0; 
     updateClock(); 
     const d = new Date();
+    
     // Sync wheels visually
     setWheelVal('wh-h', d.getHours());
     setWheelVal('wh-m', d.getMinutes());
     setWheelVal('wh-d', d.getDate());
-    setWheelVal('wh-mo', d.getMonth() + 1); // JS Month is 0-11
+    setWheelVal('wh-mo', d.getMonth() + 1); 
     setWheelVal('wh-y', d.getFullYear());
     
     fetch(`/time?h=${d.getHours()}&m=${d.getMinutes()}&s=${d.getSeconds()}`).catch(()=>{});
@@ -439,7 +445,6 @@ function nav(id, el) {
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     el.classList.add('active');
     
-    // Refresh Scroll for strict snap
     if(id === 'v-clock') {
          setTimeout(()=>{
              document.querySelectorAll('.wheel-window').forEach(w => w.dispatchEvent(new Event('scroll')));
